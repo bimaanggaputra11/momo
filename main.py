@@ -41,8 +41,9 @@ async def wrap_with_net(image: UploadFile = File(...)):
     except Exception as e:
         error_msg = "OpenAI quota habis! Cek billing di platform.openai.com" if "billing" in str(e).lower() else str(e)
         return JSONResponse({"success": False, "message": error_msg}, status_code=500)
-        if __name__ == "__main__":
+        
+if __name__ == "__main__":
     import uvicorn
     import os
-    port = int(os.getenv("PORT", 8080))   # ← ini yang wajib
+    port = int(os.getenv("PORT", 8080))
     uvicorn.run("main:app", host="0.0.0.0", port=port)
