@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fruit Foam Net Wrap AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .gradient-bg { background: linear-gradient(-45deg, #0f0f23, #1a1a2e, #16213e); background-size: 400%; animation: g 15s ease infinite; }
+    @keyframes g { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+    .spinner { border: 4px solid #333; border-top: 4px solid #3b82f6; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body class="gradient-bg min-h-screen text-white flex items-center justify-center p-4">
+  <div class="max-w-2xl w-full">
+    <h1 class="text-5xl font-bold text-center mb-4 bg-gradient-to-r from-pink-400 to-blue-400 bg-clip-text text-transparent">
+      Fruit Foam Net Wrap AI
+    </h1>
+    <p class="text-center text-gray-300 mb-8">Upload foto → langsung dibungkus jaring buah full-body!</p>
+
+    <div class="bg-white/10 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-white/20">
+      <div id="uploadArea" class="border-4 border-dashed border-gray-500 rounded-2xl p-12 text-center cursor-pointer hover:border-blue-400 transition">
+        <input type="file" id="fileInput" accept="image/*" class="hidden" />
+        <p class="text-2xl mb-4">Klik atau drop foto di sini</p>
+        <button onclick="document.getElementById('fileInput').click()" class="bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-xl text-xl font-bold">
+          Pilih Foto
+        </button>
+      </div>
+
+      <div id="loading" class="hidden text-center py-12">
+        <div class="spinner mx-auto mb-6"></div>
+        <p class="text-xl">Sedang membungkus dengan jaring buah...</p>
+        <p class="text-gray-400">15–30 detik</p>
+      </div>
+
+      <div id="result" class="hidden text-center">
+        <img id="resultImg" class="max-w-full rounded-2xl shadow-2xl mb-6 mx-auto" />
+        <div class="flex gap-4 justify-center">
+          <a id="downloadBtn" download="fruit-net-wrap.png" class="bg-green-600 hover:bg-green-700 px-8 py-4 rounded-xl font-bold">Download</a>
+          <button onclick="location.reload()" class="bg-gray-700 hover:bg-gray-600 px-8 py-4 rounded-xl font-bold">Wrap Foto Lain</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('uploadArea').addEventListener('click', () => document.getElementById('fileInput').click());
+    document.getElementById('fileInput').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      document.getElementById('uploadArea').classList.add('hidden');
+      document.getElementById('loading').classList.remove('hidden');
+
+      const form = new FormData();
+      form.append('image', file);
+
+      try {
+        const res = await fetch('/api/generate', { method: 'POST', body: form });
+        const data = await res.json();
+
+        if (data.success) {
+          document.getElementById('resultImg').src = data.image_url;
+          document.getElementById('downloadBtn').href = data.image_url;
+          document.getElementById('loading').classList.add('hidden');
+          document.getElementById('result').classList.remove('hidden');
+        } else {
+          alert("Error: " + data.message);
+          location.reload();
+        }
+      } catch (err) {
+        alert("Koneksi error atau quota habis!");
+        location.reload();
+      }
+    });
+  </script>
+</body>
+</html>
