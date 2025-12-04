@@ -9,7 +9,7 @@ load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 app = FastAPI()
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 PROMPT_FRUIT_NET = """
 Add a tight, transparent fruit foam protective mesh net that completely wraps the entire body from head to toe, including the face. 
